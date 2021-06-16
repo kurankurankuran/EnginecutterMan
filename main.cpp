@@ -3,6 +3,8 @@
 // ƒƒCƒ“ˆ— [main.cpp]
 // Author :KAZUKI KURA
 //
+// XV‚P
+//
 //=============================================================================
 #include "AssimpModel.h"
 #include "main.h"
