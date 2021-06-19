@@ -76,7 +76,7 @@ CEnemyVacuum*          g_pEnemy;  // 敵ポインタ
 
 static bool			  g_bBGM = false; //BGM追加用
 
-static XINPUT_STATE* g_pXController;
+static XINPUT_STATE* g_pXController; //コントローラー用変数
 static XMVECTOR      g_NorVec;
 
 static float        g_elapsedTime = 0.0f;
