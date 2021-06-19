@@ -72,10 +72,6 @@ static enum {
 //*****************************************************************************
 CAssimpModel		g_model[MAX_PLAYER+10];            // キャラ
 
-//static CCamera*			g_pCamera;          // カメラ
-//static CLight*			g_pLight;           // ライト
-
-//static CEnemy*          g_pEnemy;
 CEnemyVacuum*          g_pEnemy;
 
 static bool			  g_bBGM = false;
