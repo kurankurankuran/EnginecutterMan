@@ -72,7 +72,7 @@ static enum {
 //*****************************************************************************
 CAssimpModel		g_model[MAX_PLAYER+10];            // キャラ
 
-CEnemyVacuum*          g_pEnemy;
+CEnemyVacuum*          g_pEnemy;  // 敵ポインタ
 
 static bool			  g_bBGM = false;
 
