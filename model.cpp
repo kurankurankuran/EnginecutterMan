@@ -19,14 +19,6 @@
 #include "Camera.h"
 #include "Light.h"
 
-//
-//int main(void)
-//{
-//	XMStoreFloat4x4(XMMatrixIdentity(), XMMatrixIdentity());
-//	return 0;
-//}
-
-
 
 static enum {
 	NONE_PLAYER = 0,
@@ -64,11 +56,8 @@ static enum {
 #define MODEL_MACHINE_LEFT			"data/model/Player/machine_left_07.fbx"
 #define MODEL_MACHINE_RIGHT			"data/model/Player/machine_right_07.fbx"
 
-//#define MODEL_CAR			"data/model/Player/chara_drive_1214.fbx"
-//#define MODEL_CAR			"data/model/Player/chara_ranaway_1214.fbx"
-//#define MODEL_CAR			"data/model/Player/chara_stop_02.fbx"
 
-#define VALUE_MOVE_MODEL	(4.0f)
+#define VALUE_MOVE_MODEL	(4.0f)      // ƒvƒŒƒCƒ„[ˆÚ“®—Ê
 #define	RATE_MOVE_MODEL		(0.20f)		// ˆÚ“®Šµ«ŒW”
 #define	RATE_ROTATE_MODEL	(0.20f)		// ‰ñ“]Šµ«ŒW”
 #define	RATE_ROTATE_MODEL_BREAK	(0.02f)	// ‰ñ“]Šµ«ŒW”
