@@ -74,7 +74,7 @@ CAssimpModel		g_model[MAX_PLAYER+10];            // キャラ
 
 CEnemyVacuum*          g_pEnemy;  // 敵ポインタ
 
-static bool			  g_bBGM = false;
+static bool			  g_bBGM = false; //BGM追加用
 
 static XINPUT_STATE* g_pXController;
 static XMVECTOR      g_NorVec;
