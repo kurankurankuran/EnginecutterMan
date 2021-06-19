@@ -80,7 +80,7 @@ static XINPUT_STATE* g_pXController; //コントローラー用変数
 static XMVECTOR      g_NorVec; //向いている向きベクトル
 
 static float        g_elapsedTime = 0.0f;
-static bool         g_isSlowDown = false;
+//static bool         g_isSlowDown = false;
 static XMFLOAT3     g_kakunoMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
 static int			 g_Cnt = 0;
 static int			 g_nAtkCnt;
