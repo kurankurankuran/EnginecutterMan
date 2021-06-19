@@ -198,19 +198,20 @@ HRESULT CPlayer::Init(void)
 		g_bModelLoad = true;
 	}
 	//************************************************************************************
-	//********************
+	// 行列の初期化
 	XMStoreFloat4x4(&m_VRotToNextMat4x4, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_RotMat4x4, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_RotationY4x4, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_RotationNor4x4, XMMatrixIdentity());
 	//********************
-	XMMATRIX        m_RotationY = XMLoadFloat4x4(&m_RotationY4x4);
-	m_RotationY = XMMatrixMultiply(m_RotationY, XMMatrixRotationY(3.14159265359f)); // ワールド行列に掛ける用行列の修正
-	XMStoreFloat4x4(&m_RotationY4x4, m_RotationY);
+	// 初期向きの設定
+	XMMATRIX  RotationY = XMLoadFloat4x4(&m_RotationY4x4);
+	RotationY = XMMatrixMultiply(RotationY, XMMatrixRotationY(3.14159265359f));
+	XMStoreFloat4x4(&m_RotationY4x4, RotationY);
 
 
-	XMMATRIX        m_VRotToNextMat = XMLoadFloat4x4(&m_VRotToNextMat4x4);    // ワンフレーム毎の運動量分プレイヤー座標を回転させる行列
-	XMMATRIX        m_RotMat = XMLoadFloat4x4(&m_RotMat4x4);           // 常に球体の中心を下にするための回転行列
+	XMMATRIX RotToNextMat = XMLoadFloat4x4(&m_VRotToNextMat4x4);    // ワンフレーム毎の運動量分プレイヤー座標を回転させる行列
+	XMMATRIX RotMat = XMLoadFloat4x4(&m_RotMat4x4);           // 常に球体の中心を下にするための回転行列
 	XMVECTOR Vpm;
 	XMVECTOR Vs;
 	XMVECTOR Vn;
@@ -220,10 +221,10 @@ HRESULT CPlayer::Init(void)
 	Vpm = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
 
 	// 球体中心から自地点方向ベクトルを移動先地点まで回転させる用の回転行列
-	m_VRotToNextMat = XMMatrixRotationAxis(Vpm, 3.14159265359f / 2.0f);
+	RotToNextMat = XMMatrixRotationAxis(Vpm, 3.14159265359f / 2.0f);
 
 	// ワールド座標移動を反映させる用の行列を作成
-	m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+	RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 	Vs = XMVectorSet(
 		m_posModel.x - 0.0f,
@@ -231,7 +232,7 @@ HRESULT CPlayer::Init(void)
 		m_posModel.z - MODEL_POSZ,
 		1.0f);
 
-	Vn = XMVector3TransformNormal(Vs, m_VRotToNextMat);
+	Vn = XMVector3TransformNormal(Vs, RotToNextMat);
 
 	// 現在地点ベクトルと移動先地点ベクトルの差から移動先が球体表面上になるよう最終的な運動量を計算
 	XMStoreFloat3(&f3V1, Vs);
@@ -252,8 +253,8 @@ HRESULT CPlayer::Init(void)
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 	// 回転を反映
-	mtxWorld = XMMatrixMultiply(mtxWorld, m_RotationY);
-	mtxWorld = XMMatrixMultiply(mtxWorld, m_RotMat);
+	mtxWorld = XMMatrixMultiply(mtxWorld, RotationY);
+	mtxWorld = XMMatrixMultiply(mtxWorld, RotMat);
 	
 
 	// 移動を反映
@@ -264,8 +265,8 @@ HRESULT CPlayer::Init(void)
 	XMStoreFloat4x4(&m_mtxWorld, mtxWorld);
 
 	//*********************************************************************
-	XMStoreFloat4x4(&m_VRotToNextMat4x4, m_VRotToNextMat);
-	XMStoreFloat4x4(&m_RotMat4x4, m_RotMat);
+	XMStoreFloat4x4(&m_VRotToNextMat4x4, RotToNextMat);
+	XMStoreFloat4x4(&m_RotMat4x4, RotMat);
 	//************************************************************************************
 
 	// BGM初期化
@@ -363,9 +364,9 @@ void CPlayer::Update(void)
 	}
 #endif
 	//*********************************************
-	XMMATRIX        m_VRotToNextMat = XMLoadFloat4x4(&m_VRotToNextMat4x4);    // ワンフレーム毎の運動量分プレイヤー座標を回転させる行列
-	XMMATRIX        m_RotMat = XMLoadFloat4x4(&m_RotMat4x4);           // 常に球体の中心を下にするための回転行列
-	XMMATRIX        m_RotationY = XMLoadFloat4x4(&m_RotationY4x4);                         // プレイヤーの上ベクトル軸回転行列
+	XMMATRIX        RotToNextMat = XMLoadFloat4x4(&m_VRotToNextMat4x4);    // ワンフレーム毎の運動量分プレイヤー座標を回転させる行列
+	XMMATRIX        RotMat = XMLoadFloat4x4(&m_RotMat4x4);           // 常に球体の中心を下にするための回転行列
+	XMMATRIX        RotationY = XMLoadFloat4x4(&m_RotationY4x4);                         // プレイヤーの上ベクトル軸回転行列
 	XMMATRIX        m_RotationNor = XMLoadFloat4x4(&m_RotationNor4x4);                       // プレイヤーの向きを変える回転行列
 
 	XMVECTOR        m_vRotDest = XMVectorSet(m_vecRotDest.x, m_vecRotDest.y, m_vecRotDest.z, 1.0f);// 目的方向ベクトル
@@ -699,7 +700,7 @@ void CPlayer::Update(void)
 
 			DiffRotationY = XMMatrixRotationY(fSita); // Y軸回転行列を作成
 
-			m_RotationY = XMMatrixMultiply(m_RotationY, DiffRotationY); // ワールド行列に掛ける用行列の修正
+			RotationY = XMMatrixMultiply(RotationY, DiffRotationY); // ワールド行列に掛ける用行列の修正
 
 			m_RotationNor = XMMatrixRotationAxis(vMoveY, fSita);
 
@@ -760,14 +761,14 @@ void CPlayer::Update(void)
 				m_fRazian += (m_fRazianDest - m_fRazian) * 0.1f;
 
 				// 球体中心から自地点方向ベクトルを移動先地点まで回転させる用の回転行列
-				m_VRotToNextMat = XMMatrixRotationAxis(Vpm, -m_fRazian);
+				RotToNextMat = XMMatrixRotationAxis(Vpm, -m_fRazian);
 
 				// ワールド座標移動を反映させる用の行列を作成
-				m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+				RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 				// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-				m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-				m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
+				m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+				m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
 
 				// 現在地点ベクトルと移動先地点ベクトル
 				switch (m_nOnFieldName)
@@ -796,7 +797,7 @@ void CPlayer::Update(void)
 				}
 
 
-				Vn = XMVector3TransformNormal(Vs, m_VRotToNextMat);
+				Vn = XMVector3TransformNormal(Vs, RotToNextMat);
 
 				// 現在地点ベクトルと移動先地点ベクトルの差から移動先が球体表面上になるよう最終的な運動量を計算
 				XMStoreFloat3(&f3V1, Vs);
@@ -835,10 +836,10 @@ void CPlayer::Update(void)
 					m_f3JumpMoveUp.z = m_f3JumpMoveUp.z - m_f3JumpMoveUp.z * 0.02f;
 
 					XMVECTOR vJumpMoveUp = XMVectorSet(m_f3JumpMoveUp.x, m_f3JumpMoveUp.y, m_f3JumpMoveUp.z, 1.0f);
-					vJumpMoveUp = XMVector3TransformNormal(vJumpMoveUp, m_VRotToNextMat);
+					vJumpMoveUp = XMVector3TransformNormal(vJumpMoveUp, RotToNextMat);
 
 					XMVECTOR vJumpMoveDown = XMVectorSet(m_f3JumpMoveDown.x, m_f3JumpMoveDown.y, m_f3JumpMoveDown.z, 1.0f);
-					vJumpMoveDown = XMVector3TransformNormal(vJumpMoveDown, m_VRotToNextMat);
+					vJumpMoveDown = XMVector3TransformNormal(vJumpMoveDown, RotToNextMat);
 
 					XMStoreFloat3(&m_f3JumpMoveUp, vJumpMoveUp);
 					XMStoreFloat3(&m_f3JumpMoveDown, vJumpMoveDown);
@@ -892,17 +893,17 @@ void CPlayer::Update(void)
 				fSita = XMVectorGetX(XMVector3AngleBetweenVectors(Vs, Vn));
 				if (!XMVector3Equal(Vs, Vn)/*fSita == 0.0f*/) {
 					// 球体中心から自地点方向ベクトルを移動先地点まで回転させる用の回転行列
-					m_VRotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
+					RotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
 
 					// ワールド座標移動を反映させる用の行列を作成
-					m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+					RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 					// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-					m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-					m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
+					m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+					m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
 				}
 				else {
-					m_VRotToNextMat = XMMatrixIdentity();
+					RotToNextMat = XMMatrixIdentity();
 				}
 				//************************************************************************************************************************
 
@@ -937,10 +938,10 @@ void CPlayer::Update(void)
 					m_f3JumpMoveUp.z = m_f3JumpMoveUp.z - m_f3JumpMoveUp.z * 0.02f;
 
 					XMVECTOR vJumpMoveUp = XMVectorSet(m_f3JumpMoveUp.x, m_f3JumpMoveUp.y, m_f3JumpMoveUp.z, 1.0f);
-					vJumpMoveUp = XMVector3TransformNormal(vJumpMoveUp, m_VRotToNextMat);
+					vJumpMoveUp = XMVector3TransformNormal(vJumpMoveUp, RotToNextMat);
 
 					XMVECTOR vJumpMoveDown = XMVectorSet(m_f3JumpMoveDown.x, m_f3JumpMoveDown.y, m_f3JumpMoveDown.z, 1.0f);
-					vJumpMoveDown = XMVector3TransformNormal(vJumpMoveDown, m_VRotToNextMat);
+					vJumpMoveDown = XMVector3TransformNormal(vJumpMoveDown, RotToNextMat);
 
 					XMStoreFloat3(&m_f3JumpMoveUp, vJumpMoveUp);
 					XMStoreFloat3(&m_f3JumpMoveDown, vJumpMoveDown);
@@ -968,7 +969,7 @@ void CPlayer::Update(void)
 		}
 		else
 		{
-			m_VRotToNextMat = XMMatrixIdentity();
+			RotToNextMat = XMMatrixIdentity();
 
 		}
 
@@ -1023,14 +1024,14 @@ void CPlayer::Update(void)
 					m_posModel.z -= m_moveModel.z;
 
 					// 逆行列で回転を無効にする
-					m_VRotToNextMat = XMMatrixInverse(nullptr, m_VRotToNextMat);
+					RotToNextMat = XMMatrixInverse(nullptr, RotToNextMat);
 					// ワールド座標移動を反映させる用の行列を作成
-					m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+					RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 					// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-					m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-					m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
-					m_VRotToNextMat = XMMatrixIdentity();
+					m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+					m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
+					RotToNextMat = XMMatrixIdentity();
 
 					//********************************************************************
 
@@ -1062,14 +1063,14 @@ void CPlayer::Update(void)
 					//fSita = XMVectorGetX(XMVector3AngleBetweenNormalsEst(XMVector3Normalize(Vs), XMVector3Normalize(Vn)));
 					fSita = XMVectorGetX(XMVector3AngleBetweenVectors(Vs, Vn));
 					if (!(fSita == 0.0f)) {
-						m_VRotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
+						RotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
 
 						// ワールド座標移動を反映させる用の行列を作成
-						m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+						RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 						// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-						m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-						m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
+						m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+						m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
 					}
 
 				}
@@ -1098,14 +1099,14 @@ void CPlayer::Update(void)
 						m_posModel.z -= m_moveModel.z;
 
 						// 逆行列で回転を無効にする
-						m_VRotToNextMat = XMMatrixInverse(nullptr, m_VRotToNextMat);
+						RotToNextMat = XMMatrixInverse(nullptr, RotToNextMat);
 						// ワールド座標移動を反映させる用の行列を作成
-						m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+						RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 						// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-						m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-						m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
-						m_VRotToNextMat = XMMatrixIdentity();
+						m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+						m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
+						RotToNextMat = XMMatrixIdentity();
 						//************************************************************************************:
 						Vs = XMVectorSet(
 							0.0f,
@@ -1138,15 +1139,15 @@ void CPlayer::Update(void)
 						fSita = XMVectorGetX(XMVector3AngleBetweenVectors(Vs, Vn));
 						if (!(fSita == 0.0f)) {
 							if (!(0.0f == XMVectorGetX(XMVector3Length(XMVector3Cross(Vs, Vn))))) {
-								m_VRotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
+								RotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
 								/*if (!(0.0f == XMVectorGetX(XMVector3Length(XMVector3Cross(Va, Vb))))) {
-									m_VRotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Va, Vb), fSita);*/
+									RotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Va, Vb), fSita);*/
 									// ワールド座標移動を反映させる用の行列を作成
-								m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+								RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 								// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-								m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-								m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
+								m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+								m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
 							}
 						}
 					}
@@ -1160,14 +1161,14 @@ void CPlayer::Update(void)
 						m_posModel.z -= m_moveModel.z;
 
 						// 逆行列で回転を無効にする
-						m_VRotToNextMat = XMMatrixInverse(nullptr, m_VRotToNextMat);
+						RotToNextMat = XMMatrixInverse(nullptr, RotToNextMat);
 						// ワールド座標移動を反映させる用の行列を作成
-						m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+						RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 						// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-						m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-						m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
-						m_VRotToNextMat = XMMatrixIdentity();
+						m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+						m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
+						RotToNextMat = XMMatrixIdentity();
 
 						//******************************************************
 						Vs = XMVectorSet(
@@ -1199,15 +1200,15 @@ void CPlayer::Update(void)
 						fSita = XMVectorGetX(XMVector3AngleBetweenVectors(Vs, Vn));
 						if (!(fSita == 0.0f)) {
 							if (!(0.0f == XMVectorGetX(XMVector3Length(XMVector3Cross(Vs, Vn))))) {
-								m_VRotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
+								RotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
 								/*if (!(0.0f == XMVectorGetX(XMVector3Length(XMVector3Cross(Va, Vb))))) {
-									m_VRotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Va, Vb), fSita);*/
+									RotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Va, Vb), fSita);*/
 									// ワールド座標移動を反映させる用の行列を作成
-								m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+								RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 								// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-								m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-								m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
+								m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+								m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
 							}
 						}
 					}
@@ -1309,14 +1310,14 @@ void CPlayer::Update(void)
 			m_posModel.z -= m_moveModel.z;
 
 			// 逆行列で回転を無効にする
-			m_VRotToNextMat = XMMatrixInverse(nullptr, m_VRotToNextMat);
+			RotToNextMat = XMMatrixInverse(nullptr, RotToNextMat);
 			// ワールド座標移動を反映させる用の行列を作成
-			m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+			RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 			// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-			m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-			m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
-			m_VRotToNextMat = XMMatrixIdentity();
+			m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+			m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
+			RotToNextMat = XMMatrixIdentity();
 
 			Vs = XMVectorSet(
 				m_posModel.x - g_pEnemy->GetCylinderP()->GetPos().x,
@@ -1352,14 +1353,14 @@ void CPlayer::Update(void)
 
 				fSita = XMVectorGetX(XMVector3AngleBetweenNormalsEst(XMVector3Normalize(Vs), XMVector3Normalize(Vn)));
 				if (!(fSita == 0.0f)) {
-					m_VRotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
+					RotToNextMat = XMMatrixRotationAxis(XMVector3Cross(Vs, Vn), fSita);
 
 					// ワールド座標移動を反映させる用の行列を作成
-					m_RotMat = XMMatrixMultiply(m_RotMat, m_VRotToNextMat);
+					RotMat = XMMatrixMultiply(RotMat, RotToNextMat);
 
 					// 現在方向ベクトルと目的方向ベクトルを球体上の移動分回転
-					m_vNowRot = XMVector3TransformNormal(m_vNowRot, m_VRotToNextMat);
-					m_vRotDest = XMVector3TransformNormal(m_vRotDest, m_VRotToNextMat);
+					m_vNowRot = XMVector3TransformNormal(m_vNowRot, RotToNextMat);
+					m_vRotDest = XMVector3TransformNormal(m_vRotDest, RotToNextMat);
 				}
 			}
 			else {
@@ -1436,8 +1437,8 @@ void CPlayer::Update(void)
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
 	// 回転を反映
-	mtxWorld = XMMatrixMultiply(mtxWorld, m_RotationY);
-	mtxWorld = XMMatrixMultiply(mtxWorld, m_RotMat);
+	mtxWorld = XMMatrixMultiply(mtxWorld, RotationY);
+	mtxWorld = XMMatrixMultiply(mtxWorld, RotMat);
 	//mtxWorld = XMMatrixMultiply(mtxWorld, BreakRot);
 
 	// 移動を反映
@@ -1448,9 +1449,9 @@ void CPlayer::Update(void)
 	XMStoreFloat4x4(&m_mtxWorld, mtxWorld);
 
 	//*********************************************************************
-	XMStoreFloat4x4(&m_VRotToNextMat4x4, m_VRotToNextMat);
-	XMStoreFloat4x4(&m_RotMat4x4, m_RotMat);
-	XMStoreFloat4x4(&m_RotationY4x4, m_RotationY);
+	XMStoreFloat4x4(&m_VRotToNextMat4x4, RotToNextMat);
+	XMStoreFloat4x4(&m_RotMat4x4, RotMat);
+	XMStoreFloat4x4(&m_RotationY4x4, RotationY);
 	XMStoreFloat4x4(&m_RotationNor4x4, m_RotationNor);
 
 	m_vecRotDest = XMFLOAT3(XMVectorGetX(m_vRotDest), XMVectorGetY(m_vRotDest), XMVectorGetZ(m_vRotDest));
