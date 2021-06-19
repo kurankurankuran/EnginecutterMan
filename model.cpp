@@ -107,7 +107,6 @@ HRESULT CPlayer::Init(void)
 	// 位置・回転・スケールの初期設定
 	m_posModel = XMFLOAT3(MODEL_POSX, MODEL_POSY, MODEL_POSZ);
 	m_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	/*m_sclModel = XMFLOAT3(2.0f, 2.0f, 2.0f);*/
 	m_sclModel = XMFLOAT3(2.0f, 2.0f, 2.0f);
 	m_f3modelY = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	m_nInvTime = PLAYER_INVTIME;
@@ -122,28 +121,6 @@ HRESULT CPlayer::Init(void)
 	m_nOnFieldType = CYLINDER_FIELD;
 	m_nOnFieldName = BODY_NAME;
 
-	
-	//**************************************************************************************************
-	//XMMATRIX mtxWorld, mtxScl, /*mtxRot,*/ mtxTranslate;
-
-	//// ワールドマトリックスの初期化
-	//mtxWorld = XMMatrixIdentity();
-
-	//// スケールを反映
-	//mtxScl = XMMatrixScaling(m_sclModel.x, m_sclModel.y, m_sclModel.z);
-	//mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-	//// 回転を反映
-	//mtxWorld = XMMatrixMultiply(mtxWorld, m_RotationY);
-	//// 移動を反映
-	//mtxTranslate = XMMatrixTranslation(m_posModel.x, m_posModel.y, m_posModel.z);
-	//mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-	//// ワールドマトリックス設定
-	//XMStoreFloat4x4(&m_mtxWorld, mtxWorld);
-
-	//**************************************************************************************************
-
 
 	HRESULT hr = S_OK;
 	ID3D11Device* pDevice = GetDevice();
@@ -156,16 +133,7 @@ HRESULT CPlayer::Init(void)
 	g_bModelLoad = false;
 #endif
 	if (!g_bModelLoad) {
-		/*for (int i = 1; i < MAX_PLAYER; ++i) {
-			if (!g_model[i].Load(pDevice, pDeviceContext, MODEL_CAR)) {
-				hr = E_FAIL;
-				MessageBoxA(GetMainWnd(), "モデルデータ読み込みエラー", "InitModel", MB_OK);
-				return hr;
-			}
-		}
-		g_bModelLoad = true;*/
-
-		//**********************************************
+		
 		for (int i = 1; i < MAX_PLAYER; ++i) {
 			// モデルデータの読み込み
 			switch (i) {
@@ -274,7 +242,7 @@ HRESULT CPlayer::Init(void)
 	m_posModel.z += f3V2.z - f3V1.z;
 
 
-	XMMATRIX mtxWorld, mtxScl, /*mtxRot,*/ mtxTranslate;
+	XMMATRIX mtxWorld, mtxScl, mtxTranslate;
 
 	// ワールドマトリックスの初期化
 	mtxWorld = XMMatrixIdentity();
@@ -286,7 +254,7 @@ HRESULT CPlayer::Init(void)
 	// 回転を反映
 	mtxWorld = XMMatrixMultiply(mtxWorld, m_RotationY);
 	mtxWorld = XMMatrixMultiply(mtxWorld, m_RotMat);
-	//mtxWorld = XMMatrixMultiply(mtxWorld, BreakRot);
+	
 
 	// 移動を反映
 	mtxTranslate = XMMatrixTranslation(m_posModel.x, m_posModel.y, m_posModel.z);
