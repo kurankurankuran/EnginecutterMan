@@ -79,11 +79,10 @@ static bool			  g_bBGM = false; //BGM追加用
 static XINPUT_STATE* g_pXController; //コントローラー用変数
 static XMVECTOR      g_NorVec; //向いている向きベクトル
 
-<<<<<<< HEAD
 //static bool         g_isSlowDown = false;
-=======
+
 //static float        g_elapsedTime = 0.0f; 
->>>>>>> Syu
+
 static XMFLOAT3     g_kakunoMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
 static int			 g_Cnt = 0;
 static int			 g_nAtkCnt;
